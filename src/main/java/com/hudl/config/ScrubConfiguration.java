@@ -99,7 +99,7 @@ public class ScrubConfiguration {
                 if (configuredStrategies == null) {
                     configuredStrategies = Maps.newHashMap();
                 }
-                configuredStrategies.put(patternKey, strategy);
+                configuredStrategies.put(patternKey, strategy      );
             }
         }
 
