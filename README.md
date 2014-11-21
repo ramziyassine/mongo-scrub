@@ -37,10 +37,11 @@ This is a good time for a ping pong game (maybe one set) or cup of coffee!!
 ### What happened
 
  Two virtual machines have been created for you and they are ready to roll
- |Name | IP address  | Mongodb server port
- |----|---------- |----------------------
- | prod | 192.168.4.15| 4815
- | test | 192.168.4.16| 4816
+
+|Name | IP address  | Mongodb server port
+|----|---------- |----------------------
+|prod | 192.168.4.15| 4815
+|test | 192.168.4.16| 4816
 
 * The boxes already have java 8 installed (run the scrubber program)
 * Mongodb server
@@ -62,7 +63,7 @@ Take a peek
 --------------
     vagrant@prod:~$ mongo --port $LOCAL_MONGO_PORT
 
-The vagrant file calls for the help of init bash script to setup environement variables like **$LOCAL_MONGO_PORT**
+The vagrant file calls for the help of init bash script to setup environement variables like **LOCAL_MONGO_PORT**
 
     vagrant@prod:~$ mongo --port $LOCAL_MONGO_PORT
 
@@ -93,77 +94,34 @@ Java CLI usage
 
 Please visit the java code in this repository. Below I document how I conduct the scrubbing operation and how it configuration bound.
 
+Restore
+--------------
+    vagrant@prod:~$ /vagrant/restore.sh
+
+Et voilà, What happened?
+* The restore script located the latest backup dump
+* Used (mongorestore)[http://docs.mongodb.org/manual/reference/program/mongorestore/] pointing to the *test* box's mongodb
+* Let check that the data in the dev was scrubbed
+
+Login to test
+--------------
+     $ vagrant ssh test
+Open a new terminal and access the same mongo-scrub directory
 
 
-GitHub Markup
-=============
+### How is scrubbing carried on
 
-We use this library on GitHub when rendering your README or any other
-rich text file. The generated HTML is then run through filters in the [html-pipeline](https://github.com/jch/html-pipeline) to perform things like [sanitization](#html-sanitization) and [syntax highlighting](https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/syntax_highlight_filter.rb).
+* (Please visit the documentation in the properties file)[https://github.com/ramziyassine/mongo-scrub/blob/master/src/main/resources/scrub.properties]
+* So when I load the (BSON)[http://bsonspec.org/] files I convert them into BSonObject and iterate through its Map to convert the values based on the scrub rules in the properties file
 
-Markups
--------
 
-The following markups are supported.  The dependencies listed are required if
-you wish to run the library. You can also run `script/bootstrap` to fetch them all.
 
-* [.markdown, .mdown, .mkdn, .md](http://daringfireball.net/projects/markdown/) -- `gem install redcarpet` (https://github.com/vmg/redcarpet)
-* [.textile](http://www.textism.com/tools/textile/) -- `gem install RedCloth`
-* [.rdoc](http://rdoc.sourceforge.net/) -- `gem install rdoc -v 3.6.1`
-* [.org](http://orgmode.org/) -- `gem install org-ruby`
-* [.creole](http://wikicreole.org/) -- `gem install creole`
-* [.mediawiki, .wiki](http://www.mediawiki.org/wiki/Help:Formatting) -- `gem install wikicloth`
-* [.rst](http://docutils.sourceforge.net/rst.html) -- `easy_install docutils`
-* [.asciidoc, .adoc, .asc](http://asciidoc.org/) -- `gem install asciidoctor` (http://asciidoctor.org)
-* [.pod](http://search.cpan.org/dist/perl/pod/perlpod.pod) -- `Pod::Simple::HTML`
-  comes with Perl >= 5.10. Lower versions should install Pod::Simple from CPAN.
 
-Installation
------------
+### Design consideration
 
-    gem install github-markup
+* I am going to play some more in mongo's replica set, the current restore process does not guarantee a zero downtime
+* The idea would be to to a secondary member and restore the data to him and then join the group and eventually the primary will catch on
+* I still have more research on this to do.
+* As far as db growth, as I mentioned above, take snapshots instead of database dumps might be workout better as the database grows.
 
-Usage
------
 
-    require 'github/markup'
-    GitHub::Markup.render('README.markdown', "* One\n* Two")
-
-Or, more realistically:
-
-    require 'github/markup'
-    GitHub::Markup.render(file, File.read(file))
-
-Contributing
-------------
-
-See [Contributing](CONTRIBUTING.md)
-
-HTML sanitization
------------------
-
-HTML rendered by the various markup language processors gets passed through an [HTML sanitization filter](https://github.com/jch/html-pipeline/blob/master/lib/html/pipeline/sanitization_filter.rb) for security reasons. HTML elements not in the whitelist are removed. HTML attributes not in the whitelist are removed from the preserved elements.
-
-The following HTML elements, organized by category, are whitelisted:
-
-|Type | Elements
-|------|----------
-|Headings | `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `h7`, `h8`
-|Prose |  `p`, `div`, `blockquote`
-|Formatted | `pre`
-| Inline | `b`, `i`, `strong`, `em`, `tt`, `code`, `ins`, `del`, `sup`, `sub`, `kbd`, `samp`, `q`, `var`
-| Lists | `ol`, `ul`, `li`, `dl`, `dt`, `dd`
-| Tables | `table`, `thead`, `tbody`, `tfoot`, `tr`, `td`, `th`
-| Breaks | `br`, `hr`
-| Ruby (East Asian) | `ruby`, `rt`, `rp`
-
-The following attributes, organized by element, are whitelisted:
-
-|Element | Attributes
-|------|----------
-| `a` | `href` (`http://`, `https://`, `mailto://`, `github-windows://`, and `github-mac://` URI schemes and relative paths only)
-| `img` | `src` (`http://` and `https://` URI schemes and relative paths only)
-| `div` | `itemscope`, `itemtype`
-| All | `abbr`, `accept`, `accept-charset`, `accesskey`, `action`, `align`, `alt`, `axis`, `border`, `cellpadding`, `cellspacing`, `char`, `charoff`, `charset`, `checked`, `cite`, `clear`, `cols`, `colspan`, `color`, `compact`, `coords`, `datetime`, `dir`, `disabled`, `enctype`, `for`, `frame`, `headers`, `height`, `hreflang`, `hspace`, `ismap`, `label`, `lang`, `longdesc`, `maxlength`, `media`, `method`, `multiple`, `name`, `nohref`, `noshade`, `nowrap`, `prompt`, `readonly`, `rel`, `rev`, `rows`, `rowspan`, `rules`, `scope`, `selected`, `shape`, `size`, `span`, `start`, `summary`, `tabindex`, `target`, `title`, `type`, `usemap`, `valign`, `value`, `vspace`, `width`, `itemprop`
-
-Note that the `id` attribute is *not* whitelisted.
