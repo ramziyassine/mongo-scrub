@@ -74,6 +74,7 @@ The vagrant file calls for the help of init bash script to setup environement va
 
 Backup/Scrubbing
 --------------
+     > exit;
      vagrant@prod:~$ /vagrant/backup.sh
 
 * The backup strategy that I used was [mongodump](http://docs.mongodb.org/manual/reference/program/mongodump/)
@@ -103,11 +104,17 @@ Et voilà, What happened?
 * Used [mongorestore](http://docs.mongodb.org/manual/reference/program/mongorestore/) pointing to the *test* box's mongodb
 * Let check that the data in the dev was scrubbed
 
-Login to test
+Access the data of the dev VM
 --------------
-     $ vagrant ssh test
-Open a new terminal and access the same mongo-scrub directory
+     $  mongo -host $FOREIGN_IP --port $FOREIGN_MONGO_PORT
+We could open another terminal and ssh to the test machine, but this is nice and sweet, simply use the Mongodb client to connect to the test server
 
+Check data is scrubbed?
+--------------
+    > db.users.find();
+    { "_id" : ObjectId("546f1831be4007ef545c812d"), "Email" : "csiicquiezingxqzylpi@testing.com", "UserName" : "Cailin_Luna", "FirstName" : "naliCi", "PhoneNumber" : "0054XX648XXX", "LastName" : "uaLn", "Password" : "5e706cb04271f1e2def7507a22994627b71b7e5dd0aa1ed6b6956007f9fd16ff037cfe038f6fc82d4eab6a8adc51703c8a6550d4915ff2dbf659c6b990d05937" }
+
+The above was just a sample of the data scrubbed, notice I did not scrub the user name (just to test the configuration)
 
 ### How is scrubbing carried on
 
