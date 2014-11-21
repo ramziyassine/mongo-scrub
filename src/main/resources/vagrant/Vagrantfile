@@ -1,0 +1,33 @@
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+    ##################
+    ## Start 2 VMs, 
+    ## one production VM call it prod 
+    ## one development VM call it test 
+    ##################
+    config.vm.define "prod" do |prod|
+        prod.vm.box = "ubuntu/trusty64"
+        prod.vm.hostname = "prod"
+        prod.vm.network "private_network", ip: "192.168.4.15"
+        prod.vm.network "forwarded_port", guest: 4815, host: 4815
+        ####
+        # Force mongod service in this instance to obey the configuration we want 
+        # For the production server the port will 4815 
+        # For the development server the port will be 4816 
+        # Don't worry no Oceanic Airline flight will be visiting an island anytime soon 
+        ####
+        prod.vm.provision "shell", path: "init-prod.sh"
+    end 
+    config.vm.define "test" do |test|
+        test.vm.box = "ubuntu/trusty64"
+        test.vm.hostname = "test"
+        test.vm.network "private_network", ip: "192.168.4.16"
+        test.vm.network "forwarded_port", guest: 4816, host: 4816
+        test.vm.provision "shell", path: "init-test.sh"
+    end  
+    
+    config.vm.provision "shell", path: "bootstrap.sh"
+   
+end
