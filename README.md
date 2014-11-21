@@ -37,10 +37,14 @@ This is a good time for a ping pong game (maybe one set) or cup of coffee!!
 ### What happened
 
  Two virtual machines have been created for you and they are ready to roll
- | Name | IP address  | Mongodb server port    |
- | ---- | ----------  | ---------------------- |
- | prod | 192.168.4.15| 4815                   |
- | test | 192.168.4.16| 4816                   |
+ |Name | IP address  | Mongodb server port
+ |----|---------- |----------------------
+ | prod | 192.168.4.15| 4815
+ | test | 192.168.4.16| 4816
+
+* The boxes already have java 8 installed (run the scrubber program)
+* Mongodb server
+* Equipped with utilities (bash script) to conduct the backup and restoration.
 
 
 Let us Populate the Production database with some data
@@ -56,10 +60,38 @@ You can execute the bash script above on the production server and it will popul
 
 Take a peek
 --------------
- 
+    vagrant@prod:~$ mongo --port $LOCAL_MONGO_PORT
+
+The vagrant file calls for the help of init bash script to setup environement variables like **$LOCAL_MONGO_PORT**
+
+    vagrant@prod:~$ mongo --port $LOCAL_MONGO_PORT
+
+* Data has been populate to our users database
+* Let us see how we can back up/scrub the data
+* Let us see how we can push the scrubbed the data to the development server
 
 
+Backup/Scrubbing
+--------------
+     vagrant@prod:~$ /vagrant/backup.sh
 
+* The backup strategy that I used was (mongodump)[http://docs.mongodb.org/manual/reference/program/mongodump/]
+* Ideally I would need to learn more about file system snapshots which seems a better way to push incremental backups especially when the data set gets huge (*200GB*)
+* The backup script calls a command line interface I build in Java
+* You don't need to use it as the bash script takes care of it but here is what is does
+
+Java CLI usage
+--------------
+    $ java -jar hudl-utils.jar
+    usage: hudl-utils
+    -b,--backup <arg>                The path of the backup bson file. The
+                                     scrubbed file will be return in the same
+                                     directory as the original file, with a
+                                     -scrubbed added to the name of the file.
+    -h,--help                        Tool usage
+    -v,--version 0.4.8.15.16.23.42   Tool usage
+
+Please visit the java code in this repository. Below I document how I conduct the scrubbing operation and how it configuration bound.
 
 
 
