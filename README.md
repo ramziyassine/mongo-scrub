@@ -116,6 +116,13 @@ Check data is scrubbed?
 
 The above was just a sample of the data scrubbed, notice I did not scrub the user name (just to test the configuration)
 
+I am done?
+--------------
+     > exit;
+     $ exit
+     $ vagrant destroy
+If you don't want a clean slate and total removal of the virtual machines use vagrant destroy
+
 ### How is scrubbing carried on
 
 * [Please visit the documentation in the properties file](https://github.com/ramziyassine/mongo-scrub/blob/master/src/main/resources/scrub.properties)
