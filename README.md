@@ -14,3 +14,7 @@ Both are running a mongodb server. In addition, I will show you how to backup on
 * If you are using a Windows machine please know that it does not come with a native ssh client so you will have to 
     * You will need to install [PuTTY](http://the.earth.li/~sgtatham/putty/latest/x86/putty.exe)
     * You will also need to install [PuTTYgen](http://the.earth.li/~sgtatham/putty/latest/x86/puttygen.exe)
+* Once you have downloaded the software above please head to your terminal(Unix, Linux, OS X) or the command prompt(Windows) and: 
+
+    $ git clone https://github.com/ramziyassine/mongo-scrub.git
+    $ cd mongo-scrub
